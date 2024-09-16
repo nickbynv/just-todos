@@ -76,5 +76,5 @@ func (r *ListPostgres) GetById(userId, listId int) (todo.List, error) {
 }
 
 func NewListPostgres(db *sqlx.DB) *ListPostgres {
-	return &ListPostgres{db}
+	return &ListPostgres{db: db}
 }
