@@ -11,9 +11,11 @@ type Authorization interface {
 	GetUser(username, password string) (todo.User, error)
 }
 
-//type List interface {
-//
-//}
+type List interface {
+	Create(userId int, list todo.List) (int, error)
+	GetAll(userId int) ([]todo.List, error)
+	GetById(userId, listId int) (todo.List, error)
+}
 
 //type Item interface {
 //
@@ -21,12 +23,13 @@ type Authorization interface {
 
 type Repository struct {
 	Authorization
-	//List
+	List
 	//Item
 }
 
 func NewRepository(db *sqlx.DB) *Repository {
 	return &Repository{
 		Authorization: NewAuthPostgres(db),
+		List:          NewListPostgres(db),
 	}
 }

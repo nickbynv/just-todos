@@ -12,9 +12,11 @@ type Authorization interface {
 	ParseToken(token string) (int, error)
 }
 
-//type List interface {
-//
-//}
+type List interface {
+	Create(userId int, list todo.List) (int, error)
+	GetAll(userId int) ([]todo.List, error)
+	GetById(userId, listId int) (todo.List, error)
+}
 
 //type Item interface {
 //
@@ -22,12 +24,13 @@ type Authorization interface {
 
 type Service struct {
 	Authorization
-	//List
+	List
 	//Item
 }
 
 func NewService(repos *repository.Repository) *Service {
 	return &Service{
 		Authorization: NewAuthService(repos.Authorization),
+		List:          NewListService(repos.List),
 	}
 }
