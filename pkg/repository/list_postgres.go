@@ -3,7 +3,6 @@ package repository
 import (
 	"fmt"
 	"github.com/jmoiron/sqlx"
-	"github.com/sirupsen/logrus"
 	todo "just-todos"
 	"strings"
 )
@@ -99,19 +98,19 @@ func (r *ListPostgres) Delete(userId, listId int) error {
 	return err
 }
 
-func (r *ListPostgres) Update(userId, listId int, input todo.UpdateListInput) error {
+func (r *ListPostgres) Update(userId, listId int, input todo.UpdateListInput) (todo.List, error) {
 	setValues := make([]string, 0)
 	args := make([]any, 0)
 	argId := 1
 
 	if input.Title != nil {
-		setValues = append(setValues, fmt.Sprintf("title=$%d", argId))
+		setValues = append(setValues, fmt.Sprintf("title = $%d", argId))
 		args = append(args, *input.Title)
 		argId++
 	}
 
 	if input.Description != nil {
-		setValues = append(setValues, fmt.Sprintf("description=$%d", argId))
+		setValues = append(setValues, fmt.Sprintf("description = $%d", argId))
 		args = append(args, *input.Description)
 		argId++
 	}
@@ -127,7 +126,8 @@ func (r *ListPostgres) Update(userId, listId int, input todo.UpdateListInput) er
 			FROM %s ul
 			WHERE l.id = ul.list_id
 				AND ul.list_id = $%d
-				AND ul.user_id = $%d`,
+				AND ul.user_id = $%d
+		RETURNING l.id, title, description`,
 		listsTable,
 		setQuery,
 		usersListsTable,
@@ -137,12 +137,14 @@ func (r *ListPostgres) Update(userId, listId int, input todo.UpdateListInput) er
 
 	args = append(args, listId, userId)
 
-	logrus.Debugf("updateQuery: %s", query)
-	logrus.Debugf("args: %s", args)
+	row := r.db.QueryRow(query, args...)
 
-	_, err := r.db.Exec(query, args...)
+	var list todo.List
+	if err := row.Scan(&list.Id, &list.Title, &list.Description); err != nil {
+		return todo.List{}, err
+	}
 
-	return err
+	return list, nil
 }
 
 func NewListPostgres(db *sqlx.DB) *ListPostgres {

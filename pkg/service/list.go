@@ -25,9 +25,9 @@ func (s *ListService) Delete(userId, listId int) error {
 	return s.repo.Delete(userId, listId)
 }
 
-func (s *ListService) Update(userId, listId int, input todo.UpdateListInput) error {
+func (s *ListService) Update(userId, listId int, input todo.UpdateListInput) (todo.List, error) {
 	if err := input.Validate(); err != nil {
-		return err
+		return todo.List{}, err
 	}
 
 	return s.repo.Update(userId, listId, input)
