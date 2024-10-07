@@ -9,6 +9,10 @@ type ListService struct {
 	repo repository.List
 }
 
+func NewListService(repo repository.List) *ListService {
+	return &ListService{repo}
+}
+
 func (s *ListService) Create(userId int, list todo.List) (int, error) {
 	return s.repo.Create(userId, list)
 }
@@ -31,8 +35,4 @@ func (s *ListService) Update(userId, listId int, input todo.UpdateListInput) (to
 	}
 
 	return s.repo.Update(userId, listId, input)
-}
-
-func NewListService(repo repository.List) *ListService {
-	return &ListService{repo}
 }

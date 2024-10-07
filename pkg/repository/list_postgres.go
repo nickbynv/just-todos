@@ -11,6 +11,10 @@ type ListPostgres struct {
 	db *sqlx.DB
 }
 
+func NewListPostgres(db *sqlx.DB) *ListPostgres {
+	return &ListPostgres{db}
+}
+
 func (r *ListPostgres) Create(userId int, list todo.List) (int, error) {
 	tx, err := r.db.Begin()
 	if err != nil {
@@ -84,8 +88,7 @@ func (r *ListPostgres) GetById(userId, listId int) (todo.List, error) {
 
 func (r *ListPostgres) Delete(userId, listId int) error {
 	query := fmt.Sprintf(
-		`DELETE
-		FROM %s l
+		`DELETE FROM %s l
 		USING %s ul
 		WHERE l.id = ul.list_id
 			AND ul.user_id = $1
@@ -145,8 +148,4 @@ func (r *ListPostgres) Update(userId, listId int, input todo.UpdateListInput) (t
 	}
 
 	return list, nil
-}
-
-func NewListPostgres(db *sqlx.DB) *ListPostgres {
-	return &ListPostgres{db: db}
 }

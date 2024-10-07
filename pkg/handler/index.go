@@ -6,7 +6,11 @@ import (
 )
 
 type Handler struct {
-	services *service.Service
+	service *service.Service
+}
+
+func NewHandler(service *service.Service) *Handler {
+	return &Handler{service}
 }
 
 func (h *Handler) InitRoutes() *gin.Engine {
@@ -32,16 +36,16 @@ func (h *Handler) InitRoutes() *gin.Engine {
 			{
 				items.POST("/", h.createItem)
 				items.GET("/", h.getAllItems)
-				items.GET("/:item_id", h.getItemById)
-				items.PUT("/:item_id", h.updateItem)
-				items.DELETE("/:item_id", h.deleteItem)
 			}
+		}
+
+		items := api.Group("items")
+		{
+			items.GET("/:id", h.getItemById)
+			items.PUT("/:id", h.updateItem)
+			items.DELETE("/:id", h.deleteItem)
 		}
 	}
 
 	return router
-}
-
-func NewHandler(services *service.Service) *Handler {
-	return &Handler{services}
 }

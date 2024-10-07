@@ -22,7 +22,7 @@ type tokenClaims struct {
 }
 
 type AuthService struct {
-	repo repository.Authorization
+	repo repository.Auth
 }
 
 func (s *AuthService) CreateUser(user todo.User) (int, error) {
@@ -71,7 +71,7 @@ func (s *AuthService) ParseToken(accessToken string) (int, error) {
 	return claims.UserId, nil
 }
 
-func NewAuthService(repo repository.Authorization) *AuthService {
+func NewAuthService(repo repository.Auth) *AuthService {
 	return &AuthService{repo}
 }
 
