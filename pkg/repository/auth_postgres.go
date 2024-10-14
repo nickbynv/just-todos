@@ -13,7 +13,7 @@ type AuthPostgres struct {
 
 func (r *AuthPostgres) CreateUser(user todo.User) (int, error) {
 	query := fmt.Sprintf(
-		"INSERT INTO %s(name, username, password_hash) VALUES($1, $2, $3) RETURNING id",
+		`INSERT INTO %s(name, username, password_hash) VALUES($1, $2, $3) RETURNING id`,
 		usersTable,
 	)
 	row := r.db.QueryRow(query, user.Name, user.Username, user.Password)
@@ -28,7 +28,7 @@ func (r *AuthPostgres) CreateUser(user todo.User) (int, error) {
 func (r *AuthPostgres) GetUser(username, password string) (todo.User, error) {
 	var user todo.User
 	query := fmt.Sprintf(
-		"SELECT id FROM %s WHERE username=$1 AND password_hash=$2",
+		`SELECT id FROM %s WHERE username = $1 AND password_hash = $2`,
 		usersTable,
 	)
 	err := r.db.Get(&user, query, username, password)

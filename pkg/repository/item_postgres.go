@@ -21,15 +21,14 @@ func (r *ItemPostgres) Create(listId int, item todo.Item) (int, error) {
 		return 0, err
 	}
 
-	var itemId int
 	createItemQuery := fmt.Sprintf(
 		`INSERT INTO %s (title, description) VALUES ($1, $2) RETURNING id`,
 		itemsTable,
 	)
 
 	row := tx.QueryRow(createItemQuery, item.Title, item.Description)
-	err = row.Scan(&itemId)
-	if err != nil {
+	var itemId int
+	if err := row.Scan(&itemId); err != nil {
 		tx.Rollback()
 		return 0, err
 	}
@@ -38,13 +37,16 @@ func (r *ItemPostgres) Create(listId int, item todo.Item) (int, error) {
 		`INSERT INTO %s (list_id, item_id) VALUES ($1, $2)`,
 		listsItemsTable,
 	)
-	_, err = tx.Exec(createListItemQuery, listId, itemId)
-	if err != nil {
+	if _, err := tx.Exec(createListItemQuery, listId, itemId); err != nil {
 		tx.Rollback()
 		return 0, err
 	}
 
-	return itemId, tx.Commit()
+	if err := tx.Commit(); err != nil {
+		return 0, err
+	}
+
+	return itemId, nil
 }
 
 func (r *ItemPostgres) GetAll(userId, listId int) ([]todo.Item, error) {
@@ -167,6 +169,8 @@ func (r *ItemPostgres) Update(userId, itemId int, input todo.UpdateItemInput) er
 		argId,
 		argId+1,
 	)
+
+	fmt.Println(query)
 
 	args = append(args, userId, itemId)
 
