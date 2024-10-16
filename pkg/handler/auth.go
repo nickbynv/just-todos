@@ -9,7 +9,8 @@ import (
 func (h *Handler) signUp(c *gin.Context) {
 	var input todo.User
 
-	if err := c.BindJSON(&input); err != nil {
+	err := c.BindJSON(&input)
+	if err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
@@ -33,7 +34,8 @@ type signInInput struct {
 func (h *Handler) signIn(c *gin.Context) {
 	var input signInInput
 
-	if err := c.BindJSON(&input); err != nil {
+	err := c.BindJSON(&input)
+	if err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}

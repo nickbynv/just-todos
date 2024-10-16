@@ -25,6 +25,10 @@ type AuthService struct {
 	repo repository.Auth
 }
 
+func NewAuthService(repo repository.Auth) *AuthService {
+	return &AuthService{repo}
+}
+
 func (s *AuthService) CreateUser(user todo.User) (int, error) {
 	user.Password = generatePasswordHash(user.Password)
 
@@ -69,10 +73,6 @@ func (s *AuthService) ParseToken(accessToken string) (int, error) {
 	}
 
 	return claims.UserId, nil
-}
-
-func NewAuthService(repo repository.Auth) *AuthService {
-	return &AuthService{repo}
 }
 
 func generatePasswordHash(password string) string {

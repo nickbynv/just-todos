@@ -30,7 +30,8 @@ func (s *ListService) Delete(userId, listId int) error {
 }
 
 func (s *ListService) Update(userId, listId int, input todo.UpdateListInput) (todo.List, error) {
-	if err := input.Validate(); err != nil {
+	err := input.Validate()
+	if err != nil {
 		return todo.List{}, err
 	}
 

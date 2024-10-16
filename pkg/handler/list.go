@@ -14,7 +14,8 @@ func (h *Handler) createList(c *gin.Context) {
 	}
 
 	var input todo.List
-	if err := c.BindJSON(&input); err != nil {
+	err = c.BindJSON(&input)
+	if err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
@@ -87,7 +88,8 @@ func (h *Handler) updateList(c *gin.Context) {
 	}
 
 	var input todo.UpdateListInput
-	if err := c.BindJSON(&input); err != nil {
+	err = c.BindJSON(&input)
+	if err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}

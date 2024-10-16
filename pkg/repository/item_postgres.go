@@ -25,10 +25,11 @@ func (r *ItemPostgres) Create(listId int, item todo.Item) (int, error) {
 		`INSERT INTO %s (title, description) VALUES ($1, $2) RETURNING id`,
 		itemsTable,
 	)
-
 	row := tx.QueryRow(createItemQuery, item.Title, item.Description)
+
 	var itemId int
-	if err := row.Scan(&itemId); err != nil {
+	err = row.Scan(&itemId)
+	if err != nil {
 		tx.Rollback()
 		return 0, err
 	}
@@ -37,12 +38,14 @@ func (r *ItemPostgres) Create(listId int, item todo.Item) (int, error) {
 		`INSERT INTO %s (list_id, item_id) VALUES ($1, $2)`,
 		listsItemsTable,
 	)
-	if _, err := tx.Exec(createListItemQuery, listId, itemId); err != nil {
+	_, err = tx.Exec(createListItemQuery, listId, itemId)
+	if err != nil {
 		tx.Rollback()
 		return 0, err
 	}
 
-	if err := tx.Commit(); err != nil {
+	err = tx.Commit()
+	if err != nil {
 		return 0, err
 	}
 
@@ -70,7 +73,8 @@ func (r *ItemPostgres) GetAll(userId, listId int) ([]todo.Item, error) {
 		usersListsTable,
 	)
 
-	if err := r.db.Select(&items, query, listId, userId); err != nil {
+	err := r.db.Select(&items, query, listId, userId)
+	if err != nil {
 		return nil, err
 	}
 
@@ -98,7 +102,8 @@ func (r *ItemPostgres) GetById(userId, itemId int) (todo.Item, error) {
 		usersListsTable,
 	)
 
-	if err := r.db.Get(&item, query, itemId, userId); err != nil {
+	err := r.db.Get(&item, query, itemId, userId)
+	if err != nil {
 		return item, err
 	}
 
@@ -169,8 +174,6 @@ func (r *ItemPostgres) Update(userId, itemId int, input todo.UpdateItemInput) er
 		argId,
 		argId+1,
 	)
-
-	fmt.Println(query)
 
 	args = append(args, userId, itemId)
 

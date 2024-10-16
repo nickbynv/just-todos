@@ -20,7 +20,8 @@ func (h *Handler) createItem(c *gin.Context) {
 	}
 
 	var input todo.Item
-	if err := c.BindJSON(&input); err != nil {
+	err = c.BindJSON(&input)
+	if err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
@@ -91,12 +92,14 @@ func (h *Handler) updateItem(c *gin.Context) {
 	}
 
 	var input todo.UpdateItemInput
-	if err := c.BindJSON(&input); err != nil {
+	err = c.BindJSON(&input)
+	if err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
 
-	if err := h.service.Item.Update(userId, id, input); err != nil {
+	err = h.service.Item.Update(userId, id, input)
+	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
@@ -116,7 +119,8 @@ func (h *Handler) deleteItem(c *gin.Context) {
 		return
 	}
 
-	if err := h.service.Item.Delete(userId, itemId); err != nil {
+	err = h.service.Item.Delete(userId, itemId)
+	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}

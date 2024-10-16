@@ -26,8 +26,10 @@ func (r *ListPostgres) Create(userId int, list todo.List) (int, error) {
 		listsTable,
 	)
 	row := tx.QueryRow(createListQuery, list.Title, list.Description)
+
 	var id int
-	if err := row.Scan(&id); err != nil {
+	err = row.Scan(&id)
+	if err != nil {
 		tx.Rollback()
 		return 0, err
 	}
@@ -143,7 +145,8 @@ func (r *ListPostgres) Update(userId, listId int, input todo.UpdateListInput) (t
 	row := r.db.QueryRow(query, args...)
 
 	var list todo.List
-	if err := row.Scan(&list.Id, &list.Title, &list.Description); err != nil {
+	err := row.Scan(&list.Id, &list.Title, &list.Description)
+	if err != nil {
 		return todo.List{}, err
 	}
 
